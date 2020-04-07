@@ -1,3 +1,3 @@
-# Project 1
-
-Web Programming with Python and JavaScript
+# Book Reviewer
+Book reviewing application with authentication and an API
+Made using Goodreads API

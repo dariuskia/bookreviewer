@@ -23,13 +23,23 @@ db = scoped_session(sessionmaker(bind=engine))
 API_KEY = os.getenv("API_KEY")
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def login():
+    return render_template("login.html")
+
+@app.route("/fail")
+def login_fail():
+    return render_template("login_fail")
 
 @app.route("/register")
 def signup():
     return render_template("signup.html")
 
-@app.route("/login")
-def login():
-    return "Login"
+@app.route("/register_sucess", methods=["POST"])
+def register_success():
+    return render_template("register_sucess.html")
+
+@app.route("/home", methods=["POST"])
+def home():
+    if db.execute("SELECT * FROM users WHERE username = :username AND password = :password", {"username": request.form.get('username'), "password": request.form.get('password')}).rowcount != 0:
+        return "Logged in"
+    return login_fail()

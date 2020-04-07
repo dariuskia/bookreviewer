@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session, render_template, request
+from flask import Flask, session, render_template, request, redirect, url_for, flash
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -24,22 +24,27 @@ API_KEY = os.getenv("API_KEY")
 
 @app.route("/")
 def login():
+    flash("hello thelkjelfkjadlfkjalkdj")
     return render_template("login.html")
 
 @app.route("/fail")
 def login_fail():
-    return render_template("login_fail")
+    return render_template("login_fail.html")
 
 @app.route("/register")
 def signup():
     return render_template("signup.html")
 
-@app.route("/register_sucess", methods=["POST"])
-def register_success():
-    return render_template("register_sucess.html")
+@app.route("/register_success", methods=["POST"])
+def register_final():
+    pass
 
-@app.route("/home", methods=["POST"])
+
+@app.route("/home", methods=["POST", "GET"])
 def home():
+    if request.method == "GET":
+        return "Please login before accessing this page."
     if db.execute("SELECT * FROM users WHERE username = :username AND password = :password", {"username": request.form.get('username'), "password": request.form.get('password')}).rowcount != 0:
         return "Logged in"
-    return login_fail()
+    else:
+        return redirect(url_for('login_fail'))

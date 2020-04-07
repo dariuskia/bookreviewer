@@ -22,29 +22,38 @@ db = scoped_session(sessionmaker(bind=engine))
 
 API_KEY = os.getenv("API_KEY")
 
-@app.route("/")
-def login():
-    flash("hello thelkjelfkjadlfkjalkdj")
-    return render_template("login.html")
-
-@app.route("/fail")
-def login_fail():
-    return render_template("login_fail.html")
-
-@app.route("/register")
-def signup():
-    return render_template("signup.html")
-
-@app.route("/register_success", methods=["POST"])
-def register_final():
-    pass
-
-
-@app.route("/home", methods=["POST", "GET"])
+@app.route('/')
 def home():
-    if request.method == "GET":
-        return "Please login before accessing this page."
-    if db.execute("SELECT * FROM users WHERE username = :username AND password = :password", {"username": request.form.get('username'), "password": request.form.get('password')}).rowcount != 0:
-        return "Logged in"
+    if session.get('logged_in') is False:
+        return redirect(url_for('login'))
     else:
-        return redirect(url_for('login_fail'))
+        return render_template('home.html')
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    error = None
+    register = None
+    if (request.args.get('reg')):
+        register = "You have succesfully created an account. Type in your credentials to continue."
+    if request.method == "POST":
+        if db.execute("SELECT * FROM users WHERE username = :username AND password = :password", {"username": request.form.get('username'), "password": request.form.get('password')}).rowcount == 0:
+            error = "Incorrect username or password. Please try again."
+        else:
+            session['logged_in'] = True
+    if session.get('logged_in') == True:
+        return redirect(url_for('home'))
+    return render_template('login.html', err=error, reg=register)
+
+@app.route('/logout')
+def logout():
+    session['logged_in'] = False
+    return redirect(url_for('home'))
+
+@app.route('/signup', methods=["POST", "GET"])
+def signup():
+    if request.method == "GET":
+        return render_template("signup.html")
+    else:
+        db.execute("INSERT INTO users (username, password) VALUES (:username, :password)", {"username": request.form.get('username'), "password": request.form.get('password')})
+        db.commit()
+        return redirect('/login?reg=yes')

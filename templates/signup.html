@@ -3,6 +3,13 @@
     Register
 {% endblock %}
 {% block body %}
+  {% if err %}
+    <div class="container w-50">
+        <div class="alert alert-danger pb-1" role="alert">
+            <p class="text-center">{{ err }}</p>
+        </div>
+    </div>
+  {% endif %}
     <div class="col-12 container pt-3 pb-4 w-50 border shadow text-center">
       <h3 class="pb-3">Register</h3>
       <form method="post">

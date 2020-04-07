@@ -54,6 +54,14 @@ def signup():
     if request.method == "GET":
         return render_template("signup.html")
     else:
-        db.execute("INSERT INTO users (username, password) VALUES (:username, :password)", {"username": request.form.get('username'), "password": request.form.get('password')})
+        u = request.form.get('username')
+        pw = request.form.get('password')
+        if u == "" or pw == "":
+            return render_template('signup.html', err="Signup failed: Username or password cannot be empty")
+        if len(u) > 20:
+            return render_template('signup.html', err="Signup failed: Username may not be above 20 characters")
+        if len(pw) > 200:
+            return render_template('signup.html', err="Signup failed: Password may not be above 200 characters")
+        db.execute("INSERT INTO users (username, password) VALUES (:username, :password)", {"username": u, "password": pw})
         db.commit()
         return redirect('/login?reg=yes')

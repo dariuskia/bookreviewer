@@ -3,5 +3,7 @@
 Homepage
 {% endblock %}
 {% block body %}
-<a href="{{ url_for('logout') }}">Logout</a>
+<div class="container-fluid pt-2">
+    <button class="btn btn-outline-primary d-block float-right"><a href="{{ url_for('logout') }}">Logout</a></button>
+</div>
 {% endblock %}

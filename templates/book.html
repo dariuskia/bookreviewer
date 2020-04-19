@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+{% block title %}
+  {{ book[1] }}
+{% endblock %}
+{% block style %}
+h1,h2 {
+  display: inline;
+}
+label {
+  margin-right: 10px;
+}
+
+#error {
+  width: 66%;
+}
+
+{% endblock %}
+{% block body %}
+  <div class="p-3">
+    <div class="d-inline container-fluid py-3">
+      <a href="{{ url_for('home') }}" class="btn btn-lg btn-outline-primary d-block float-left" role="button">Back to search</a>
+    </div>
+    <div class="d-inline container-fluid py-3">
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-primary d-block float-right">logout</a>
+      <p class="float-right mx-3">Currently logged in as: <span class="text-success">{{ session['username'] }}</span></p>
+    </div>
+  </div>
+  <div class="container mt-5"></div>
+  <div class="row pr-0">
+    <div class="text-center col-sm-12 col-md-6 px-5">
+      <h3>(ISBN: {{ book[0] }})</h3>
+      <h1>{{ book[1] }}</h1><h2 class="text-secondary"> by {{ book[2] }}</h2>
+      <h3 class="text-secondary">Published in {{ book[3] }}</h3>
+      <div class="container my-5">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Goodreads API Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Number of reviews</th>
+              <td>{{ data['reviews_count'] }}</td>
+            </tr>
+            <tr>
+              <th>Average Rating</th>
+              <td>{{ data['average_rating'] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {% if reviews %}
+        <ul class="list-group">
+          {% for review in reviews %}
+            <li class="list-group-item">
+              <p class="lead">rating: {{ review [3] }}
+              <p class="lead">{{ review[4] }}</p>
+              <p>by {{ review[2] }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <h4 class="mt-5 ml-2 lead">No reviews currently. Be the first to write one!</h4>
+      {% endif %}
+    </div>
+    <div class="pl-5 text-left col-sm-12 col-md-6">
+      {% if err %}
+        <div id="error" class="alert alert-danger pb-1" role="alert">
+          <p class="text-center">{{ err }}</p>
+        </div>
+      {% endif %}
+      <h3>Write a review</h3>
+      <form action="{{ url_for('review', isbn=book[0]) }}" method="POST">
+        <div>
+          <span class="mr-2">Rating: </span>
+          <label class="radio-inline"><input type="radio" name="rating" value="1">1</label>
+          <label class="radio-inline"><input type="radio" name="rating" value="2">2</label>
+          <label class="radio-inline"><input type="radio" name="rating" value="3">3</label>
+          <label class="radio-inline"><input type="radio" name="rating" value="4">4</label>
+          <label class="radio-inline"><input type="radio" name="rating" value="5">5</label>
+        </div>
+        <div>
+          <label class="text-left">Review (max 500 characters):<textarea class="form-control" name="text" placeholder="Write your review here!" rows=12 cols=60></textarea></label>
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+  {% endblock %}

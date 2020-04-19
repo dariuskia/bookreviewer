@@ -2,8 +2,64 @@
 {% block title %}
 Homepage
 {% endblock %}
+{% block style %}
+label.radio-inline {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+label input {
+  margin-right: 2px;
+}
+{% endblock %}
 {% block body %}
-<div class="container-fluid pt-2">
-    <button class="btn btn-outline-primary d-block float-right"><a href="{{ url_for('logout') }}">Logout</a></button>
-</div>
+  <div class="container-fluid py-3">
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-primary d-block float-right">logout</a>
+    <p class="float-right mx-3">Currently logged in as: <span class="text-success">{{ session['username'] }}</span></p>
+  </div>
+  <div class="container pt-5">
+  {% if err %}
+    <div class="container w-50">
+        <div class="alert alert-danger pb-1" role="alert">
+            <p class="text-center">{{ err }}</p>
+        </div>
+    </div>
+  {% endif %}
+    <form class="form-group" method="POST" action"{{ url_for('search') }}">
+      <label class="d-block lead">
+        Search for a Book
+        <input type="text" name="search" class="form-control" placeholder="search term" value="{{ search }}">
+      </label>
+      <div>
+          <label class="radio-inline"><input type="radio" name="option" value="isbn" {{ on['isbn'] }}>isbn</label>
+          <label class="radio-inline"><input type="radio" name="option" value="title" {{ on['title'] }}>title</label>
+          <label class="radio-inline"><input type="radio" name="option" value="author" {{ on['author'] }}>author</label>
+          <button type="submit" class="mt-2 btn btn-success">Search</button>
+      </div>
+    </form>
+    {% if results %}
+    <div class="container mt-5">
+      <h4 class="lead">Showing {{ count }} results for {{ option }} "{{ search }}"</h4>
+      <ul class="list-group">
+        {% for result in results %}
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-4">
+              <p class="lead font-weight-bold mb-1">{{ result[1] }}</p>
+              <p class="my-1">by {{ result[2] }}</p>
+              <p class="text-secondary">ISBN: {{ result[0] }}</p>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-8">
+              <a href="{{ url_for('book', isbn=result[0]) }}"><button id="viewmore" class="float-md-right btn btn-lg btn-warning">View more</button></a>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% elif not home %}
+    <div class="container">
+      <h4 class="lead">Sorry, no results were found...</h4>
+    </div>
+    {% endif %}
+  </div>
 {% endblock %}

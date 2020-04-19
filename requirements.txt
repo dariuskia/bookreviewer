@@ -4,3 +4,4 @@ psycopg2-binary
 SQLAlchemy
 python-dotenv
 werkzeug==0.16
+requests
